@@ -1,33 +1,49 @@
 import { useEffect, useState } from "react";
-import { getPokemon, getPokemonData } from "../Api/Api";
+import { getPokemon } from "../../services/Api";
+import Thumbnail from "./Thumbnail";
 
 function Pokemom(){
   const [ pokemons, setPokemons ] = useState([]);
-  const [ pokemonData, setPokemoData ] = useState([])
+  const [ page, setpage ] = useState(0);
+  
+
   useEffect(() => {
     (async () => {
-      const pokemons = await getPokemon();
-      
-      setPokemons(pokemons.results);
+      const data = await getPokemon(page);    
+      setPokemons(data.results);
     })();    
-  }, [])
+  }, [page])
+
+  const onPrev = () => {
+    setpage(page - 1)
+  }
+  const onNext = () => {
+    setpage(page + 1)
+    console.log(page)
+  }
 
   return(
-    <div>
-      {pokemons.map((pokemon) => 
-        <div
-          key={pokemon.name}
-          className="border-2 border-solid border-gray-200 rounded m-4 p-4 text-center w-1/5"
+    <div className="p-5">
+      <div className="grid grid-cols-3">
+        {pokemons.map((pokemon) => 
+          <Thumbnail key={pokemon.name} name={pokemon.name} url={pokemon.url} />
+        )}
+      </div>
+      <div className="flex justify-between">
+        <button
+          className="bg-red-500 text-white py-2 px-5 rounded"
+          onClick={onPrev}
         >
-          <img src={getPokemonData(pokemon.url)} alt={pokemon.name} />
-          <span
-            className="text-lg text-black-300 block"
-          >
-            {pokemon.name}
-          </span>
-        </div>
-      )}
-    </div>     
+          Anterior
+        </button>
+        <button
+          className="bg-red-500 text-white py-2 px-5 rounded"
+          onClick={onNext}
+        >
+          Próximo
+        </button>
+      </div>      
+    </div>    
   )
 }
 
